@@ -9,3 +9,4 @@ TRY_AGAIN_LATER = 'Unable to process request. Please try again later'
 
 # BART endpoints
 STATIONS_ENDPOINT = 'http://api.bart.gov/api/stn.aspx?cmd=stns&json=y&key={}'
+STATION_INFO_ENDPOINT = 'http://api.bart.gov/api/stn.aspx?cmd=stninfo&orig={}&key={}&json=y'
