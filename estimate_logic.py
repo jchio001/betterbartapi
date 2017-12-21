@@ -37,9 +37,6 @@ def format_estimate(estimate):
 
 
 def get_estimates(req_dict, bart_api_key):
-    if bart_api_key is None:
-        return json.dumps({'message': constants.MISSING_API_KEY}), constants.HTTP_BAD_REQUEST
-
     estimates_resp = requests.get(constants.ESTIMATES_BASE.format(bart_api_key) + urllib.urlencode(req_dict))
     if estimates_resp.status_code == constants.HTTP_STATUS_OK:
         try:

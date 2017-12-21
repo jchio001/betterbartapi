@@ -7,9 +7,6 @@ import xmltodict
 
 
 def get_stations(bart_api_key):
-    if bart_api_key is None:
-        return json.dumps({'message': constants.MISSING_API_KEY}), constants.HTTP_BAD_REQUEST
-
     stations_resp = requests.get(constants.STATIONS_ENDPOINT.format(bart_api_key))
     # NOTE: Bart API apparently returns 200 for literally every case ever. So, we need to check what's the appropriate
     # course of action by checking to see if it's a XML response or a JSON response
@@ -48,9 +45,6 @@ def to_ordered_station_info_dict(station_info=None):
 # TODO: Station info probably doesn't change so I only need to perform this computation once and shove it into PSQL
 # TODO: Also find out how to hook flask up with PSQL on heroku
 def get_station_info(station_abbr, bart_api_key):
-    if bart_api_key is None:
-        return json.dumps({'message': constants.MISSING_API_KEY}), constants.HTTP_BAD_REQUEST
-
     station_info_resp = requests.get(constants.STATION_INFO_ENDPOINT.format(station_abbr, bart_api_key))
     try:
         resp = xmltodict.parse(station_info_resp.content)
