@@ -1,8 +1,6 @@
-from exceptions import MissingTokenException
-from flask import abort, request
+from api_exceptions import MissingTokenException
+from flask import request
 from functools import wraps
-
-import constants
 
 
 def CheckToken(f):
@@ -10,7 +8,7 @@ def CheckToken(f):
     # args = variable amount of values, kwargs = variable amount of key value pairs
     def check_token(*args, **kwargs):
         if request.headers.get('X-API-KEY') is None:
-            raise MissingTokenException
+            raise MissingTokenException()
         else:
             return f(*args, **kwargs)
     return check_token

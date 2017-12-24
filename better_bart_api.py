@@ -1,5 +1,5 @@
+from api_exceptions import MissingTokenException
 from decorators import CheckToken
-from exceptions import MissingTokenException
 from flask import Flask, request
 
 import constants
@@ -35,8 +35,9 @@ def get_station_estimates():
 
 
 @app.errorhandler(MissingTokenException)
-def handle_no_token():
-    return json.dumps({'message': constants.MISSING_API_KEY}), constants.HTTP_BAD_REQUEST
+def handle_no_token(missing_token_exception):
+    return missing_token_exception.message, missing_token_exception.http_code
+
 
 if __name__ == "__main__":
     app.run()

@@ -1,10 +1,11 @@
+import json
+import urllib
 from collections import OrderedDict
 
-import constants
-import json
 import requests
-import urllib
 import xmltodict
+
+import constants
 
 
 def format_estimate_response(station_estimate_info):

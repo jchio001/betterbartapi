@@ -1,9 +1,10 @@
+import json
 from collections import OrderedDict
 
-import constants
-import json
 import requests
 import xmltodict
+
+import constants
 
 
 def get_stations(bart_api_key):
