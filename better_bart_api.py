@@ -1,4 +1,4 @@
-from api_exceptions import MissingFieldsException, MissingTokenException
+from api_exceptions import MissingFieldsError, MissingTokenException
 from decorators import CheckToken, ValidateFields
 from flask import Flask, request
 
@@ -33,7 +33,7 @@ def get_station_estimates():
     return estimate_logic.get_estimates(req_dict, bart_api_key=request.headers.get('X-API-KEY'))
 
 
-@app.errorhandler(MissingFieldsException)
+@app.errorhandler(MissingFieldsError)
 def missing_fields(missing_fields_exception):
     return missing_fields_exception.message, missing_fields_exception.http_code
 

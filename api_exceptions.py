@@ -2,12 +2,19 @@ import constants
 import json
 
 
-class MissingFieldsException(Exception):
+class MissingFieldsError(Exception):
     http_code = constants.HTTP_BAD_REQUEST
 
-    def __init__(self, missing_keys_set=set()):
-        self.message = json.dumps({'message': constants.INVALID_PARAMS.format(missing_keys_set)})
-        super(MissingFieldsException, self).__init__()
+    def __init__(self, missing_keys):
+        self.message = json.dumps({'message': self.format_missing_fields_message(missing_keys)})
+        super(MissingFieldsError, self).__init__()
+
+    @staticmethod
+    def format_missing_fields_message(missing_keys):
+        if not missing_keys:
+            raise ValueError
+
+        return constants.INVALID_PARAMS.format(', '.join(missing_keys))
 
 
 class MissingTokenException(Exception):
