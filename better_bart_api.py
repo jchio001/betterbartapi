@@ -1,10 +1,8 @@
-from api_exceptions import MissingTokenException
-from decorators import CheckToken
+from api_exceptions import MissingFieldsException, MissingTokenException
+from decorators import CheckToken, ValidateFields
 from flask import Flask, request
 
-import constants
 import estimate_logic
-import json
 import station_logic
 
 app = Flask(__name__)
@@ -29,10 +27,15 @@ def get_station_info(station_abbr):
 
 @app.route('/estimates')
 @CheckToken
+@ValidateFields({'orig'})
 def get_station_estimates():
     req_dict = request.args.to_dict()
     return estimate_logic.get_estimates(req_dict, bart_api_key=request.headers.get('X-API-KEY'))
 
+
+@app.errorhandler(MissingFieldsException)
+def missing_fields(missing_fields_exception):
+    return missing_fields_exception.message, missing_fields_exception.http_code
 
 @app.errorhandler(MissingTokenException)
 def handle_no_token(missing_token_exception):
