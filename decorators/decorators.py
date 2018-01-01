@@ -1,6 +1,8 @@
-from api_exceptions import MissingFieldsError, MissingTokenException
-from flask import request
 from functools import wraps
+
+from flask import request
+
+from misc.api_exceptions import MissingFieldsError, MissingTokenException
 
 
 # Used to verify if a user passed in their BART API token

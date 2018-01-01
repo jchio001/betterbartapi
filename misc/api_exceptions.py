@@ -1,5 +1,6 @@
-import constants
 import json
+
+import constants
 
 
 class MissingFieldsError(Exception):

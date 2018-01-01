@@ -4,7 +4,7 @@ from collections import OrderedDict
 import requests
 import xmltodict
 
-import constants
+from misc import constants
 
 
 def get_stations(bart_api_key):
