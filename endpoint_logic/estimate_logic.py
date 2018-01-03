@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from misc import constants
+from misc.constants import RESP_HEADER
 
 import json
 import logging
@@ -41,7 +42,7 @@ def format_estimate(estimate):
 
 def get_estimates(orig_abbr, bart_api_key):
     estimates, status_code = get_formatted_estimates(orig_abbr=orig_abbr, bart_api_key=bart_api_key)
-    return json.dumps(estimates), status_code
+    return json.dumps(estimates), status_code, RESP_HEADER
 
 
 def get_formatted_estimates(orig_abbr, bart_api_key):

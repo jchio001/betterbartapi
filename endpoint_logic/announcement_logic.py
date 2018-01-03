@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from misc import constants
+from misc.constants import RESP_HEADER
 from misc.utils import string_to_epoch
 
 import json
@@ -28,9 +29,10 @@ def get_announcements(bart_api_key):
     if announcements_resp.status_code == constants.HTTP_STATUS_OK:
         try:
             announcements_resp = xmltodict.parse(announcements_resp.content)
-            return {'error': announcements_resp['root']['message']['error']['details']}, constants.HTTP_BAD_REQUEST
+            return {'error': announcements_resp['root']['message']['error']['details']}, constants.HTTP_BAD_REQUEST, \
+                   RESP_HEADER
         except Exception:
             announcements_resp = json.loads(announcements_resp.content)['root']
-            return json.dumps(format_announcements_resp(announcements_resp)), constants.HTTP_STATUS_OK
+            return json.dumps(format_announcements_resp(announcements_resp)), constants.HTTP_STATUS_OK, RESP_HEADER
     else:
-        return {'error': constants.TRY_AGAIN_LATER}, 500
+        return {'error': constants.TRY_AGAIN_LATER}, 500, RESP_HEADER

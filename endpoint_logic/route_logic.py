@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from endpoint_logic import estimate_logic
 from misc import constants
+from misc.constants import RESP_HEADER
 from misc.utils import string_to_epoch
 
 import json
@@ -112,7 +113,7 @@ def get_trips_resp(req_dict, bart_api_key):
 
     trips_resp_dict, status_code = get_trips(req_dict, bart_api_key, route_cnt)
     if 'error' in trips_resp_dict:
-        return json.dumps({'message': trips_resp_dict['error']}), status_code
+        return json.dumps({'message': trips_resp_dict['error']}), status_code, RESP_HEADER
 
     trips_resp_dict = trips_resp_dict['response']
     orig = trips_resp_dict['origin']
@@ -141,7 +142,7 @@ def get_trips_resp(req_dict, bart_api_key):
             dest=dest,
             time_of_resp=time_of_resp,
             formatted_trips=formatted_trips)
-    ), constants.HTTP_STATUS_OK
+    ), constants.HTTP_STATUS_OK, RESP_HEADER
 
 
 # designed to only return 1 trip instance!
@@ -149,7 +150,7 @@ def get_trip_with_estimates(req_dict, bart_api_key):
     trips_resp_dict, status_code = get_trips(req_dict=req_dict, bart_api_key=bart_api_key)
 
     if 'error' in trips_resp_dict:
-        return json.dumps({'message': trips_resp_dict['error']}), status_code
+        return json.dumps({'message': trips_resp_dict['error']}), status_code, RESP_HEADER
 
     trips_resp_dict = trips_resp_dict['response']
     orig = trips_resp_dict['origin']
@@ -174,5 +175,5 @@ def get_trip_with_estimates(req_dict, bart_api_key):
             dest=dest,
             time_of_resp=time_of_resp,
             formatted_trip=formatted_trip)
-    ), constants.HTTP_STATUS_OK
+    ), constants.HTTP_STATUS_OK, RESP_HEADER
 

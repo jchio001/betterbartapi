@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from misc import constants
+from misc.constants import RESP_HEADER
 
 import json
 import requests
@@ -13,11 +14,13 @@ def get_stations(bart_api_key):
     if stations_resp.status_code == constants.HTTP_STATUS_OK:
         try:
             resp = xmltodict.parse(stations_resp.content)
-            return json.dumps({'message': resp['root']['message']['error']['details']}), constants.HTTP_BAD_REQUEST
+            return json.dumps({'message': resp['root']['message']['error']['details']}), constants.HTTP_BAD_REQUEST, \
+                   RESP_HEADER
         except Exception:
-            return json.dumps({'stations': json.loads(stations_resp.content)['root']['stations']['station']})
+            return json.dumps({'stations': json.loads(stations_resp.content)['root']['stations']['station']}), \
+                   RESP_HEADER
     else:
-        return json.dumps({'message': constants.TRY_AGAIN_LATER}), stations_resp.status_code
+        return json.dumps({'message': constants.TRY_AGAIN_LATER}), stations_resp.status_code, RESP_HEADER
 
 
 def to_ordered_station_info_dict(station_info=None):
@@ -48,7 +51,8 @@ def get_station_info(station_abbr, bart_api_key):
     station_info_resp = requests.get(constants.STATION_INFO_ENDPOINT.format(station_abbr, bart_api_key))
     try:
         resp = xmltodict.parse(station_info_resp.content)
-        return json.dumps({'message': resp['root']['message']['error']['details']}), constants.HTTP_BAD_REQUEST
+        return json.dumps({'message': resp['root']['message']['error']['details']}), constants.HTTP_BAD_REQUEST, \
+               RESP_HEADER
     except Exception:
         station_info = json.loads(station_info_resp.content)['root']['stations']['station']
 
@@ -100,5 +104,6 @@ def get_station_info(station_abbr, bart_api_key):
         activities = [food_info, shopping_info, attraction_info]
         station_info['activities'] = activities
 
-        return json.dumps({'station_info': to_ordered_station_info_dict(station_info)})
+        return json.dumps({'station_info': to_ordered_station_info_dict(station_info)}), constants.HTTP_STATUS_OK, \
+               RESP_HEADER
 

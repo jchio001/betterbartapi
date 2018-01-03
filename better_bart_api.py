@@ -1,7 +1,6 @@
-from flask import Flask, request
-
 from decorators.decorators import CheckToken, CheckFields
 from endpoint_logic import announcement_logic, estimate_logic, route_logic, station_logic
+from flask import Flask, request
 from misc.api_exceptions import MissingFieldsError, MissingTokenException
 
 app = Flask(__name__)
