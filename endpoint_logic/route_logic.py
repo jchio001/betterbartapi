@@ -125,9 +125,9 @@ def get_trips_resp(req_dict, bart_api_key):
     formatted_trips = []
     if schedule['request']['trip']:
         if isinstance(schedule['request']['trip'], list):
-            formatted_trips = list(map(
+            formatted_trips = [map(
                 lambda t : format_trip(trip=t, bart_api_key=bart_api_key, fetch_estimates=False),
-                schedule['request']['trip']))
+                schedule['request']['trip'])]
         else:
             formatted_trips.append(
                 format_trip(
@@ -144,6 +144,7 @@ def get_trips_resp(req_dict, bart_api_key):
     ), constants.HTTP_STATUS_OK
 
 
+# designed to only return 1 trip instance!
 def get_trip_with_estimates(req_dict, bart_api_key):
     trips_resp_dict, status_code = get_trips(req_dict=req_dict, bart_api_key=bart_api_key)
 
@@ -158,7 +159,6 @@ def get_trip_with_estimates(req_dict, bart_api_key):
         date_str=schedule['date'],
         time_str=schedule['time'])
 
-    #  TODO: only get the first!
     trip = None
     if schedule['request']['trip']:
         if isinstance(schedule['request']['trip'], list):

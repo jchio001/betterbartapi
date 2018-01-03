@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: gunicorn better_bart_api:app

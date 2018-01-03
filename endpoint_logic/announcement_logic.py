@@ -18,7 +18,7 @@ def format_announcements_resp(announcements_resp):
         date_str=announcements_resp['date'],
         time_str=announcements_resp['time'][:-7])
     pretty_announcement_resp['announcements'] = \
-        {'announcements': list(map(lambda a: a['description']['#cdata-section'], announcements_resp['bsa']))}
+        {'announcements': [map(lambda a: a['description']['#cdata-section'], announcements_resp['bsa'])]}
 
     return pretty_announcement_resp
 

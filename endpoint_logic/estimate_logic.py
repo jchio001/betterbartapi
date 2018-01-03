@@ -1,11 +1,10 @@
+from collections import OrderedDict
+from misc import constants
+
 import json
 import logging
-from collections import OrderedDict
-
 import requests
 import xmltodict
-
-from misc import constants
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='[%(filename)s:%(lineno)d] %(message)s', level=logging.DEBUG)
