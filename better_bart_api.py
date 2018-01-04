@@ -1,14 +1,16 @@
 from decorators.decorators import CheckToken, CheckFields
 from endpoint_logic import announcement_logic, estimate_logic, trip_logic, station_logic
-from flask import Flask, request
+from flask import Flask, redirect, request
 from misc.api_exceptions import FailedBartRequestError, MissingFieldsError, MissingTokenError
+from misc.constants import HTTP_FOUND, REDIRECT_URL
 
 app = Flask(__name__)
 
 
+# TODO: redirect this to the API documentation website when it exists
 @app.route('/')
 def index():
-    return 'Hello world!'
+    return redirect(REDIRECT_URL, HTTP_FOUND)
 
 
 @app.route('/announcements')

@@ -9,8 +9,8 @@ activities = ['food', 'shopping', 'attraction']
 
 
 def get_stations(bart_api_key):
-    return json.dumps({'stations': bart_api_client.get_stations(bart_api_key=bart_api_key)}), constants.HTTP_STATUS_OK, \
-           RESP_HEADER
+    return json.dumps({'stations': bart_api_client.get_stations(bart_api_key=bart_api_key)}), \
+           constants.HTTP_STATUS_OK, RESP_HEADER
 
 
 # Formats platform information for a specific direction from BART API into a much cleaner format
@@ -24,6 +24,7 @@ def format_platform_info(station_info, direction):
     return platform_info
 
 
+# Fetches activity information from BART API's station information and formats it a bit more cleanly
 def format_activity(station_info, activity):
     activity_info = OrderedDict()
     activity_info['activity_type'] = activity
