@@ -1,15 +1,10 @@
+from clients import bart_api_client
 from collections import OrderedDict
 from misc import constants
 from misc.constants import RESP_HEADER
 from misc.utils import string_to_epoch
 
 import json
-import logging
-import requests
-import xmltodict
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(format='[%(filename)s:%(lineno)d] %(message)s', level=logging.DEBUG)
 
 
 def format_announcements_resp(announcements_resp):
@@ -25,14 +20,5 @@ def format_announcements_resp(announcements_resp):
 
 
 def get_announcements(bart_api_key):
-    announcements_resp = requests.get(constants.ANNOUNCEMENTS_ENDPOINT.format(bart_api_key))
-    if announcements_resp.status_code == constants.HTTP_STATUS_OK:
-        try:
-            announcements_resp = xmltodict.parse(announcements_resp.content)
-            return {'error': announcements_resp['root']['message']['error']['details']}, constants.HTTP_BAD_REQUEST, \
-                   RESP_HEADER
-        except Exception:
-            announcements_resp = json.loads(announcements_resp.content)['root']
-            return json.dumps(format_announcements_resp(announcements_resp)), constants.HTTP_STATUS_OK, RESP_HEADER
-    else:
-        return {'error': constants.TRY_AGAIN_LATER}, 500, RESP_HEADER
+    formatted_announcements_resp = format_announcements_resp(bart_api_client.get_announcements(bart_api_key))
+    return json.dumps(formatted_announcements_resp), constants.HTTP_STATUS_OK, RESP_HEADER

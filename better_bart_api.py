@@ -1,7 +1,7 @@
 from decorators.decorators import CheckToken, CheckFields
-from endpoint_logic import announcement_logic, estimate_logic, route_logic, station_logic
+from endpoint_logic import announcement_logic, estimate_logic, trip_logic, station_logic
 from flask import Flask, request
-from misc.api_exceptions import MissingFieldsError, MissingTokenException
+from misc.api_exceptions import FailedBartRequestError, MissingFieldsError, MissingTokenError
 
 app = Flask(__name__)
 
@@ -39,26 +39,31 @@ def get_station_estimates(orig_abbr):
 @CheckToken
 @CheckFields({'orig', 'dest'})
 def get_trips():
-    return route_logic.get_trips_resp(req_dict=request.args.to_dict(), bart_api_key=request.headers.get('X-API-KEY'))
+    return trip_logic.get_trips_resp(req_dict=request.args.to_dict(), bart_api_key=request.headers.get('X-API-KEY'))
 
 
 @app.route('/trip/estimates')
 @CheckToken
 @CheckFields({'orig', 'dest'})
 def get_route_estimates():
-    return route_logic.get_trip_with_estimates(
+    return trip_logic.get_trip_with_estimates(
         req_dict=request.args.to_dict(),
         bart_api_key=request.headers.get('X-API-KEY'))
 
 
 @app.errorhandler(MissingFieldsError)
-def missing_fields(missing_fields_exception):
-    return missing_fields_exception.message, missing_fields_exception.http_code
+def handle_missing_fields(missing_fields_exception):
+    return missing_fields_exception.to_response()
 
 
-@app.errorhandler(MissingTokenException)
+@app.errorhandler(MissingTokenError)
 def handle_no_token(missing_token_exception):
-    return missing_token_exception.message, missing_token_exception.http_code
+    return missing_token_exception.to_response()
+
+
+@app.errorhandler(FailedBartRequestError)
+def handle_uncaught_failed_bart_req(failed_bart_req_error):
+    return failed_bart_req_error.to_response()
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+from clients import bart_api_client
 from collections import OrderedDict
 from endpoint_logic import estimate_logic
 from misc import constants
@@ -6,12 +7,6 @@ from misc.utils import string_to_epoch
 
 import json
 import logging
-import requests
-import urllib
-import xmltodict
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(format='[%(filename)s:%(lineno)d] %(message)s', level=logging.DEBUG)
 
 
 def format_leg(leg, bart_api_key, fetch_estimates=False):
@@ -93,29 +88,8 @@ def format_trip_with_estimate_resp(orig, dest, time_of_resp, formatted_trip):
     return pretty_trip_with_estimates_resp
 
 
-def get_trips(req_dict, bart_api_key, route_cnt=1):
-    trips_resp = requests.get(constants.TRIPS_ENDPOINT.format(bart_api_key, route_cnt) + urllib.urlencode(req_dict))
-    if trips_resp.status_code == constants.HTTP_STATUS_OK:
-        try:
-            trips_resp = xmltodict.parse(trips_resp.content)
-            return {'error': trips_resp['root']['message']['error']['details']}, constants.HTTP_BAD_REQUEST
-        except Exception:
-            return {'response': json.loads(trips_resp.content)['root']}, constants.HTTP_STATUS_OK
-    else:
-        return {'error': constants.TRY_AGAIN_LATER}, constants.HTTP_INTERNAL_SERVER_ERROR
-
-
 def get_trips_resp(req_dict, bart_api_key):
-    route_cnt = 1
-    if 'amount' in req_dict:
-        route_cnt = req_dict['amount']
-        del req_dict['amount']
-
-    trips_resp_dict, status_code = get_trips(req_dict, bart_api_key, route_cnt)
-    if 'error' in trips_resp_dict:
-        return json.dumps({'message': trips_resp_dict['error']}), status_code, RESP_HEADER
-
-    trips_resp_dict = trips_resp_dict['response']
+    trips_resp_dict = bart_api_client.get_trips(req_dict=req_dict, bart_api_key=bart_api_key)
     orig = trips_resp_dict['origin']
     dest = trips_resp_dict['destination']
     schedule = trips_resp_dict['schedule']
@@ -147,12 +121,7 @@ def get_trips_resp(req_dict, bart_api_key):
 
 # designed to only return 1 trip instance!
 def get_trip_with_estimates(req_dict, bart_api_key):
-    trips_resp_dict, status_code = get_trips(req_dict=req_dict, bart_api_key=bart_api_key)
-
-    if 'error' in trips_resp_dict:
-        return json.dumps({'message': trips_resp_dict['error']}), status_code, RESP_HEADER
-
-    trips_resp_dict = trips_resp_dict['response']
+    trips_resp_dict = bart_api_client.get_trips(req_dict=req_dict, bart_api_key=bart_api_key)
     orig = trips_resp_dict['origin']
     dest = trips_resp_dict['destination']
     schedule = trips_resp_dict['schedule']
