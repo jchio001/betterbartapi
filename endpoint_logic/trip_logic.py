@@ -1,4 +1,4 @@
-from clients import bart_api_client
+from clients.bart_api_client import bart_api_client
 from collections import OrderedDict
 from endpoint_logic import estimate_logic
 from misc import constants
@@ -6,10 +6,9 @@ from misc.constants import RESP_HEADER
 from misc.utils import string_to_epoch
 
 import json
-import logging
 
 
-def format_leg(leg, bart_api_key, fetch_estimates=False):
+def format_leg(leg, fetch_estimates=False):
     pretty_leg_dict = OrderedDict()
     pretty_leg_dict['origin'] = leg['@origin']
     pretty_leg_dict['destination'] = leg['@destination']
@@ -29,8 +28,7 @@ def format_leg(leg, bart_api_key, fetch_estimates=False):
     if fetch_estimates:
         filtered_estimates_resp = estimate_logic.get_filtered_estimates(
             orig_abbr=pretty_leg_dict['origin'],
-            final_dest_abbr=pretty_leg_dict['heading_towards'],
-            bart_api_key=bart_api_key)
+            final_dest_abbr=pretty_leg_dict['heading_towards'])
 
         if filtered_estimates_resp:
             pretty_leg_dict['limited'] = filtered_estimates_resp['limited']
@@ -44,7 +42,7 @@ def format_leg(leg, bart_api_key, fetch_estimates=False):
 
 # This method is to cleanly format a trip object and get real time estimates for each leg.
 # Yes, there is a '@' in front of every key. No, I don't know why.
-def format_trip(trip, bart_api_key, fetch_estimates=False):
+def format_trip(trip, fetch_estimates=False):
     pretty_trip_dict = OrderedDict()
     pretty_trip_dict['origin'] = trip['@origin']
     pretty_trip_dict['destination'] = trip['@destination']
@@ -61,7 +59,7 @@ def format_trip(trip, bart_api_key, fetch_estimates=False):
 
     pretty_leg_list = []
     for leg in trip['leg']:
-        pretty_leg_list.append(format_leg(leg=leg, bart_api_key=bart_api_key, fetch_estimates=fetch_estimates))
+        pretty_leg_list.append(format_leg(leg=leg, fetch_estimates=fetch_estimates))
 
     pretty_trip_dict['trains'] = pretty_leg_list
 
@@ -88,8 +86,8 @@ def format_trip_with_estimate_resp(orig, dest, time_of_resp, formatted_trip):
     return pretty_trip_with_estimates_resp
 
 
-def get_trips_resp(req_dict, bart_api_key):
-    trips_resp_dict = bart_api_client.get_trips(req_dict=req_dict, bart_api_key=bart_api_key)
+def get_trips_resp(req_dict):
+    trips_resp_dict = bart_api_client.get_trips(req_dict=req_dict)
     orig = trips_resp_dict['origin']
     dest = trips_resp_dict['destination']
     schedule = trips_resp_dict['schedule']
@@ -100,15 +98,10 @@ def get_trips_resp(req_dict, bart_api_key):
     formatted_trips = []
     if schedule['request']['trip']:
         if isinstance(schedule['request']['trip'], list):
-            formatted_trips = [map(
-                lambda t : format_trip(trip=t, bart_api_key=bart_api_key, fetch_estimates=False),
-                schedule['request']['trip'])]
+            formatted_trips = [map(lambda t : format_trip(trip=t, fetch_estimates=False), schedule['request']['trip'])]
         else:
             formatted_trips.append(
-                format_trip(
-                    trip=schedule['request']['trip'],
-                    bart_api_key=bart_api_key,
-                    fetch_estimates=False))
+                format_trip(trip=schedule['request']['trip'],fetch_estimates=False))
 
     return json.dumps(
         format_trips_resp(
@@ -120,8 +113,8 @@ def get_trips_resp(req_dict, bart_api_key):
 
 
 # designed to only return 1 trip instance!
-def get_trip_with_estimates(req_dict, bart_api_key):
-    trips_resp_dict = bart_api_client.get_trips(req_dict=req_dict, bart_api_key=bart_api_key)
+def get_trip_with_estimates(req_dict):
+    trips_resp_dict = bart_api_client.get_trips(req_dict=req_dict)
     orig = trips_resp_dict['origin']
     dest = trips_resp_dict['destination']
     schedule = trips_resp_dict['schedule']
@@ -136,7 +129,7 @@ def get_trip_with_estimates(req_dict, bart_api_key):
         else:
             trip = schedule['request']['trip']
 
-    formatted_trip = format_trip(trip=trip, bart_api_key=bart_api_key, fetch_estimates=True)
+    formatted_trip = format_trip(trip=trip, fetch_estimates=True)
 
     return json.dumps(
         format_trip_with_estimate_resp(

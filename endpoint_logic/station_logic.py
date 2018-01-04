@@ -1,4 +1,4 @@
-from clients import bart_api_client
+from clients.bart_api_client import bart_api_client
 from collections import OrderedDict
 from misc import constants
 from misc.constants import RESP_HEADER
@@ -8,9 +8,8 @@ import json
 activities = ['food', 'shopping', 'attraction']
 
 
-def get_stations(bart_api_key):
-    return json.dumps({'stations': bart_api_client.get_stations(bart_api_key=bart_api_key)}), \
-           constants.HTTP_STATUS_OK, RESP_HEADER
+def get_stations():
+    return json.dumps({'stations': bart_api_client.get_stations()}), constants.HTTP_STATUS_OK, RESP_HEADER
 
 
 # Formats platform information for a specific direction from BART API into a much cleaner format
@@ -51,7 +50,7 @@ def format_station_info_resp(station_info):
     return formatted_station_info_dict
 
 
-def get_station_info(station_abbr, bart_api_key):
-    station_info = bart_api_client.get_station_info(station_abbr, bart_api_key)
+def get_station_info(station_abbr):
+    station_info = bart_api_client.get_station_info(station_abbr)
     return json.dumps({'station_info': format_station_info_resp(station_info)}), constants.HTTP_STATUS_OK, \
            RESP_HEADER

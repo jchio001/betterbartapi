@@ -1,7 +1,6 @@
-from functools import wraps
-
+from clients.bart_api_client import bart_api_client
 from flask import request
-
+from functools import wraps
 from misc.api_exceptions import MissingFieldsError, MissingTokenError
 
 
@@ -13,6 +12,7 @@ def CheckToken(f):
         if request.headers.get('X-API-KEY') is None:
             raise MissingTokenError()
         else:
+            bart_api_client.set_api_key(request.headers.get('X-API-KEY'))
             return f(*args, **kwargs)
     return check_token
 
@@ -35,3 +35,12 @@ def CheckFields(required_keys=set()):
                 return f(*args, **kwargs)
         return validate_fields
     return validate_fields_wrapper
+
+
+# Used to declare that a method will log bart api request history
+def LogReqHistory(f):
+    @wraps(f)
+    def log_req_history(*args, **kwargs):
+        bart_api_client.log_req_history()
+        return f(*args, **kwargs)
+    return log_req_history

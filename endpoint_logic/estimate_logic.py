@@ -1,4 +1,4 @@
-from clients import bart_api_client
+from clients.bart_api_client import bart_api_client
 from collections import OrderedDict
 from misc import constants
 from misc.api_exceptions import FailedBartRequestError
@@ -36,13 +36,13 @@ def format_estimate(estimate):
     return formatted_estimate
 
 
-def get_estimates(orig_abbr, bart_api_key):
-    estimates = get_formatted_estimates(orig_abbr=orig_abbr, bart_api_key=bart_api_key)
+def get_estimates(orig_abbr):
+    estimates = get_formatted_estimates(orig_abbr=orig_abbr)
     return json.dumps(estimates), constants.HTTP_STATUS_OK, RESP_HEADER
 
 
-def get_formatted_estimates(orig_abbr, bart_api_key):
-    station_estimates_info = bart_api_client.get_estimates(orig_abbr=orig_abbr, bart_api_key=bart_api_key)[0]
+def get_formatted_estimates(orig_abbr):
+    station_estimates_info = bart_api_client.get_estimates(orig_abbr=orig_abbr)[0]
     estimates_for_all_dest = station_estimates_info['etd']
 
     formatted_estimates_for_dest = []
@@ -60,9 +60,9 @@ def get_formatted_estimates(orig_abbr, bart_api_key):
     return format_estimate_resp(station_estimates_info)
 
 
-def get_filtered_estimates(orig_abbr, final_dest_abbr, bart_api_key):
+def get_filtered_estimates(orig_abbr, final_dest_abbr):
     try:
-        estimates = get_formatted_estimates(orig_abbr=orig_abbr, bart_api_key=bart_api_key)['estimates']
+        estimates = get_formatted_estimates(orig_abbr=orig_abbr)['estimates']
 
         for estimate in estimates:
             if estimate['abbr'] == final_dest_abbr:

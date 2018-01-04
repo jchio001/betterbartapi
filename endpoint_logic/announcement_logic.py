@@ -1,4 +1,4 @@
-from clients import bart_api_client
+from clients.bart_api_client import bart_api_client
 from collections import OrderedDict
 from misc import constants
 from misc.constants import RESP_HEADER
@@ -19,6 +19,6 @@ def format_announcements_resp(announcements_resp):
     return pretty_announcement_resp
 
 
-def get_announcements(bart_api_key):
-    formatted_announcements_resp = format_announcements_resp(bart_api_client.get_announcements(bart_api_key))
+def get_announcements():
+    formatted_announcements_resp = format_announcements_resp(bart_api_client.get_announcements())
     return json.dumps(formatted_announcements_resp), constants.HTTP_STATUS_OK, RESP_HEADER
