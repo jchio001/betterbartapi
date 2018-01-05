@@ -1,6 +1,6 @@
 # betterbartapi
 
-A simple wrapper around BART's official API that removes all of the terrible-ness of working with BART's API.
+A simple wrapper around BART's official API that removes all of the terrible-ness of working with BART's API. https://betterbartapi.herokuapp.com/
 
 ## Getting Starting
 
